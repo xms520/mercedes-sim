@@ -25,7 +25,10 @@ jobs:
 
       - name: Package IPA
         run: |
-          APP=$(find build -name "MercedesSim.app" -type d | head -1)
+          APP=$(find ~/Library/Developer/Xcode/DerivedData -name "MercedesSim.app" -type d 2>/dev/null | head -1)
+          if [ -z "$APP" ]; then
+            APP=$(find . -name "MercedesSim.app" -type d | head -1)
+          fi
           echo "App bundle: $APP"
           mkdir -p ipa/Payload
           cp -R "$APP" ipa/Payload/
