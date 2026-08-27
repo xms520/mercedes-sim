@@ -49,54 +49,17 @@ jobs:
           rm -f "$APP/*.dylib"
           
           # 修复 Info.plist - 移除 Xcode 版本信息
-          python3 << 'PYTHON_EOF'
-          import plistlib
-          import os
-          
-          plist_path = os.environ['APP_PATH'] + '/Info.plist'
-          with open(plist_path, 'rb') as f:
-              plist = plistlib.load(f)
-          
-          # 移除可能导致兼容性问题的字段
-          plist.pop('BuildMachineOSBuild', None)
-          plist.pop('DTCompiler', None)
-          plist.pop('DTPlatformBuild', None)
-          plist.pop('DTPlatformName', None)
-          plist.pop('DTPlatformVersion', None)
-          plist.pop('DTSDKBuild', None)
-          plist.pop('DTSDKName', None)
-          plist.pop('DTXcode', None)
-          plist.pop('DTXcodeBuild', None)
-          
-          with open(plist_path, 'wb') as f:
-              plistlib.dump(plist, f)
-          
-          print("Fixed Info.plist")
-          PYTHON_EOF
-          
-          export APP_PATH="$APP"
           python3 -c "
-          import plistlib, os
+          import plistlib
           plist_path = '$APP/Info.plist'
           with open(plist_path, 'rb') as f:
               plist = plistlib.load(f)
           for key in ['BuildMachineOSBuild', 'DTCompiler', 'DTPlatformBuild', 'DTPlatformName', 'DTPlatformVersion', 'DTSDKBuild', 'DTSDKName', 'DTXcode', 'DTXcodeBuild']:
               plist.pop(key, None)
-          with open(plist_path, 'wb') as f:
-              plistlib.dump(plist, f)
-          print('Info.plist cleaned')
-          "
-          
-          # 确保 UIRequiredDeviceCapabilities 正确
-          python3 -c "
-          import plistlib
-          plist_path = '$APP/Info.plist'
-          with open(plist_path, 'rb') as f:
-              plist = plistlib.load(f)
           plist['UIRequiredDeviceCapabilities'] = ['arm64']
           with open(plist_path, 'wb') as f:
               plistlib.dump(plist, f)
-          print('Device capabilities set to arm64')
+          print('Info.plist cleaned and fixed')
           "
           
           echo "Cleaned app directory:"
