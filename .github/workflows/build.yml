@@ -1,4 +1,4 @@
-name: Build Mercedes Simulator iOS App
+name: Build MercedesSim
 
 on:
   push:
@@ -11,26 +11,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build with Xcode
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Build for device (arm64, unsigned)
         run: |
           xcodebuild \
-            -project mercedesSim.xcodeproj \
-            -scheme mercedesSim \
+            -project MercedesSim.xcodeproj \
+            -scheme MercedesSim \
             -configuration Release \
-            -sdk iphonesimulator \
-            -destination 'name=iPhone 15 Pro' \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY='' \
+            CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            build \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+            build
 
-      - name: Create IPA
+      - name: Package IPA
         run: |
-          APP_PATH=$(find build/Release-iphonesimulator -name "mercedesSim.app" -type d | head -1)
-          mkdir -p build/Payload
-          cp -R "$APP_PATH" build/Payload/
-          cd build && zip -r ../MercedesSim.ipa Payload/
+          set -e
+          APP=build/Release-iphoneos/MercedesSim.app
+          if [ ! -d "$APP" ]; then
+            APP=$(find build -name "MercedesSim.app" -type d | head -1)
+          fi
+          echo "App bundle: $APP"
+          mkdir -p ipa/Payload
+          cp -R "$APP" ipa/Payload/
+          cd ipa
+          zip -qr ../MercedesSim.ipa Payload
+          cd ..
+          ls -lh MercedesSim.ipa
 
-      - name: Upload IPA
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: MercedesSim

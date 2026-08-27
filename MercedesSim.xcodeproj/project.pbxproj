@@ -1,0 +1,233 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B000001 /* mercedesSimApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100001; };
+		B000002 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B100003; };
+		B000003 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B100004; };
+		B000004 /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = B100005; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B100001 /* mercedesSimApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mercedesSimApp.swift; sourceTree = "<group>"; };
+		B100002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B100003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B100004 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = text.plist.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B100005 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		B100006 /* MercedesSim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MercedesSim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		B200001 = {
+			isa = PBXGroup;
+			children = (
+				B200002 /* MercedesSim */,
+				B200003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B200002 /* MercedesSim */ = {
+			isa = PBXGroup;
+			children = (
+				B100001 /* mercedesSimApp.swift */,
+				B100003 /* Assets.xcassets */,
+				B100004 /* LaunchScreen.storyboard */,
+				B100005 /* Resources */,
+				B100002 /* Info.plist */,
+			);
+			path = MercedesSim;
+			sourceTree = "<group>";
+		};
+		B200003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B100006 /* MercedesSim.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B300001 /* MercedesSim */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B500002 /* Build configuration list for PBXNativeTarget "MercedesSim" */;
+			buildPhases = (
+				B400001 /* Sources */,
+				B400002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MercedesSim;
+			productName = MercedesSim;
+			productReference = B100006 /* MercedesSim.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B300002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					B300001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = B500001 /* Build configuration list for PBXProject "MercedesSim" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = zh_CN;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				zh_CN,
+				Base,
+			);
+			mainGroup = B200001;
+			productRefGroup = B200003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B300001 /* MercedesSim */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B400002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B000004 /* Resources in Resources */,
+				B000002 /* Assets.xcassets in Resources */,
+				B000003 /* LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B400001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B000001 /* mercedesSimApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B600001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALIDATE_PRODUCT = NO;
+			};
+			name = Debug;
+		};
+		B600002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B600003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				INFOPLIST_FILE = MercedesSim/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mercedes.simulator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B600004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				INFOPLIST_FILE = MercedesSim/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mercedes.simulator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B500001 /* Build configuration list for PBXProject "MercedesSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B600001 /* Debug */,
+				B600002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B500002 /* Build configuration list for PBXNativeTarget "MercedesSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B600003 /* Debug */,
+				B600004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = B300002 /* Project object */;
+}

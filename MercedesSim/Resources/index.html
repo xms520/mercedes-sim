@@ -1,0 +1,1317 @@
+
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>梅赛德斯-奔驰</title>
+    <style>
+        /* 初始化加载界面样式 */
+        .init-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .init-text {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .init-subtext {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+        
+        /* 主内容初始隐藏 */
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+        
+        /* 加载完成后显示主内容 */
+        body.loaded .main-content {
+            opacity: 1;
+        }
+        
+        /* 加载完成后隐藏加载界面 */
+        body.loaded .init-loader {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            color: white;
+            padding: 15px;
+            padding-top: 30px;
+            background-image: url('5.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding-bottom: 70px;
+        }
+        
+        .header-icons {
+            position: absolute;
+            top: 15px;
+            right: 13px;
+            display: flex;
+            gap: 20px;
+            z-index: 1001;
+        }
+        
+        .header-icon {
+            width: 26.4px;
+            height: 26.4px;
+            cursor: pointer;
+        }
+        
+        .avatar-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(30%, -30%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+        
+        .avatar-badge img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .user-card {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px; 
+            padding-top: 16px;
+            position: relative;
+        }
+        
+        .avatar-wrapper {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+            border: 2px solid #fff;
+            margin-top: 6px;
+            position: relative;
+            transform: translate(-2px, 2px);
+        }
+        
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+            padding-top: 10px;
+            position: relative;
+        }
+        
+        .username {
+            font-size: 24px;
+            font-weight: 400; 
+            margin: 0 0 1px 0;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .username-arrow {
+            width: 8px;
+            height: 12px;
+            margin-left: 48px;
+            position: absolute;
+            right: 30px;
+            top: 19px;
+        }
+        
+        .username-small {
+            font-size: 14px;
+            font-weight: 400;
+            margin: 0 0 10px 0; 
+            color: white;
+            opacity: 0.9;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: flex-start;
+            gap: 40px;
+        }
+        
+        .stat-item {
+            text-align: left;
+        }
+        
+        .stat-number {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 2px;
+            color: white;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        .vehicle-image {
+            width: 100%;
+            margin: 5px 0 15px 0;
+            border-radius: 8px;
+        }
+        
+        .function-list {
+            background-color: #FFFFFE;
+            border-radius: 12.1px;
+            padding: 0 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.15);
+        }
+        
+        .function-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .function-item:last-child {
+            border-bottom: none;
+        }
+        
+        .function-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+        
+        .function-name {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .bottom-navigation {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: #FFFFFF;
+            padding: 10px 20px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            z-index: 999;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:last-child .nav-label {
+            color: #3B85C0;
+        }
+        
+        .vehicle-active .nav-link:nth-child(3) .nav-label {
+            color: #3B85C0;
+        }
+        
+        .vehicle-active .nav-link:last-child .nav-label {
+            color: #666666;
+        }
+        
+        .arrow-icon {
+            width: 12px;
+            height: 12px;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        /* 车辆页面样式 */
+        .vehicle-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 100;
+        }
+        
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('80.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+        
+        .info-container {
+            position: fixed;
+            top: 18.2%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            z-index: 10;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .custom-icon {
+            width: 18px;
+            height: 18px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            min-width: auto;
+            white-space: nowrap;
+        }
+        
+        #fuel-item {
+            margin-right: 0;
+        }
+
+        #mileage-item {
+            margin-left: 0;
+        }
+        
+        .time-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: -0.1em;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .time-icon {
+            width: 13px;
+            height: 13px;
+            background-image: url('img/u.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        /* 进度条样式 */
+        .progress-container {
+            width: 200px;
+            height: 5px;
+            background-color: rgba(70, 56, 57, 0.6);
+            border-radius: 3px;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: white;
+            border-radius: 3px;
+            width: 30%;
+            transition: width 0.3s ease;
+        }
+        
+        .carousel-container {
+            position: fixed;
+            top: 41.9%;
+            left: 50%;
+            width: 540px;
+            height: 230px;
+            overflow: hidden;
+            transform: translate(-50%, -50%);
+        }
+        
+        .carousel {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+            will-change: transform;
+        }
+        
+        .carousel-item {
+            flex: 0 0 500px;
+            height: 100%;
+            margin: 0 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .carousel-img {
+            max-width: 85%;
+            max-height: 85%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        .carousel-item:nth-child(1) .carousel-img,
+        .carousel-item:nth-child(2) .carousel-img,
+        .carousel-item:nth-child(3) .carousel-img {
+            transform: scale(0.85);
+        }
+        
+
+        
+        .dot.active {
+            background-color: white;
+        }
+        
+        /* 编辑弹窗样式 */
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .edit-modal.show {
+            opacity: 1;
+        }
+        
+        .edit-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .edit-modal.show .edit-content {
+            transform: translateY(0);
+        }
+        
+        .edit-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .edit-field {
+            margin-bottom: 18px;
+        }
+        
+        .edit-field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .edit-field input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        .edit-field input:focus {
+            border-color: #3B85C0;
+            outline: none;
+        }
+        
+        .edit-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+        }
+        
+        .edit-buttons button {
+            padding: 10px 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            flex: 1;
+            transition: all 0.2s;
+        }
+        
+        .save-btn {
+            background-color: #3B85C0;
+            color: white;
+        }
+        
+        .save-btn:active {
+            background-color: #2a6da8;
+            transform: scale(0.98);
+        }
+        
+        .cancel-btn {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+        
+        .cancel-btn:active {
+            background-color: #e0e0e0;
+            transform: scale(0.98);
+        }
+        
+        /* 初始化加载弹窗 */
+        .loading-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1003;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .loading-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 280px;
+            text-align: center;
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            color: #333;
+            margin-top: 15px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3B85C0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 用户信息编辑弹窗 */
+        .user-edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .user-edit-modal.show {
+            opacity: 1;
+        }
+        
+        .user-edit-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .user-edit-modal.show .user-edit-content {
+            transform: translateY(0);
+        }
+        
+        .avatar-upload {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .avatar-upload-text {
+            font-size: 14px;
+            color: #3B85C0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 初始化加载弹窗 -->
+    <div class="loading-modal" id="loading-modal" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在初始化，约60秒</div>
+        </div>
+    </div>
+
+    <!-- 主页面内容 -->
+    <div id="main-page">
+        <!-- 右上角图标 -->
+        <!-- 初始化加载界面 -->
+    <div class="init-loader" id="init-loader">
+        <div class="init-text">正在初始化，约60秒</div>
+        <div class="init-subtext">请稍候...</div>
+    </div>
+    
+    <!-- 主内容包裹在main-content类中 -->
+    <div class="main-content">
+        <div class="header-icons">
+            <img src="img/1.png" class="header-icon" alt="图标1" id="edit-icon">
+            <img src="img/2.png" class="header-icon" alt="图标2" id="user-edit-icon">
+        </div>
+
+        <!-- 用户卡片 -->
+        <div class="user-card">
+            <div class="avatar-wrapper">
+                <div class="avatar-badge">
+                    <img src="img/qb.png" alt="徽标">
+                </div>
+                <img src="tx.png" alt="用户头像" class="avatar" id="user-avatar">
+            </div>
+            
+            <div class="user-info">
+                <div class="username">
+                    <span id="username-text">阿泽</span>
+                    <img src="img/v.png" class="username-arrow" alt="箭头">
+                </div>
+                <div class="username-small" id="user-signature">你的个性签名</div>
+                
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number" id="moment-count">0</div>
+                        <div class="stat-label">此刻</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="follow-count">0</div>
+                        <div class="stat-label">关注</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="fans-count">0</div>
+                        <div class="stat-label">粉丝</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 车辆图片 -->
+        <img src="img/qice.png" class="vehicle-image" alt="未创建车辆">
+        
+        <!-- 功能列表 -->
+        <div class="function-list">
+            <div class="function-item">
+                <img src="gn/1.jpg" class="function-icon" alt="订单中心">
+                <span class="function-name">订单中心</span>
+                <img src="img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+            <div class="function-item">
+                <img src="gn/2.jpg" class="function-icon" alt="权益中心">
+                <span class="function-name">权益中心</span>
+                <img src="https://s480.fekn.cn/img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+            <div class="function-item">
+                <img src="gn/3.jpg" class="function-icon" alt="我的保修手册">
+                <span class="function-name">我的保修手册</span>
+                <img src="https://s480.fekn.cn/img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+            <div class="function-item">
+                <img src="gn/4.jpg" class="function-icon" alt="地址管理">
+                <span class="function-name">地址管理</span>
+                <img src="https://s480.fekn.cn/img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+        </div>
+        
+        <div class="function-list">
+            <div class="function-item">
+                <img src="gn/5.jpg" class="function-icon" alt="用车指南">
+                <span class="function-name">用车指南</span>
+                <img src="https://s480.fekn.cn/img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+        </div>
+        
+        <div class="function-list">
+            <div class="function-item">
+                <img src="gn/6.jpg" class="function-icon" alt="授权管理">
+                <span class="function-name">授权管理</span>
+                <img src="https://s480.fekn.cn/img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+            <div class="function-item">
+                <img src="gn/7.jpg" class="function-icon" alt="法律信息">
+                <span class="function-name">法律信息</span>
+                <img src="https://s480.fekn.cn/img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+            <div class="function-item">
+                <img src="gn/8.jpg" class="function-icon" alt="产品优化建议">
+                <span class="function-name">产品优化建议</span>
+                <img src="https://s480.fekn.cn/img/3.png" class="arrow-icon" alt="箭头">
+            </div>
+        </div>
+    </div>
+    
+    <!-- 车辆页面 -->
+    <div class="vehicle-page" id="vehicle-page" style="display: none;">
+        <div class="background"></div>
+        
+        <div class="info-container">
+            <div class="info-row">
+                <div class="info-item" id="fuel-item">
+                    <span class="info-value" id="fuel-value">30%</span>
+                </div>
+                
+                <!-- 添加进度条 -->
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar" style="width: 30%;"></div>
+                </div>
+                
+                <div class="info-item" id="mileage-item">
+                    <span class="info-value" id="mileage-value">98公里</span>
+                </div>
+            </div>
+            <div class="time-info">
+                <div class="time-icon"></div>
+                <span id="current-time">同步于: 2025/12/31 10:26</span>
+            </div>
+        </div>
+        
+        <div class="carousel-container">
+            <div class="carousel">
+                <div class="carousel-item">
+                    <img src="car1.jpg" class="carousel-img" alt="车辆图片1">
+                </div>
+                <div class="carousel-item">
+                    <img src="car2.jpg" class="carousel-img" alt="车辆图片2">
+                </div>
+                <div class="carousel-item">
+                    <img src="car3.jpg" class="carousel-img" alt="车辆图片3">
+                </div>
+            </div>
+        </div>
+        
+        <div class="carousel-dots">
+            <div class="dot active" data-index="0"></div>
+            <div class="dot" data-index="1"></div>
+            <div class="dot" data-index="2"></div>
+        </div>
+    </div>
+    
+    <!-- 编辑弹窗样式 -->
+    <div class="edit-modal" id="edit-modal">
+        <div class="edit-content">
+            <div class="edit-title">编辑车辆信息</div>
+            <div class="edit-field">
+                <label for="battery-input">油量:</label>
+                <input type="text" id="battery-input" placeholder="输入油量百分比">
+            </div>
+            <div class="edit-field">
+                <label for="mileage-input">公里:</label>
+                <input type="text" id="mileage-input" placeholder="输入公里数">
+            </div>
+            <div class="edit-buttons">
+                <button class="cancel-btn" id="cancel-edit">取消</button>
+                <button class="save-btn" id="save-edit">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 用户信息编辑弹窗 -->
+    <div class="user-edit-modal" id="user-edit-modal">
+        <div class="user-edit-content">
+            <div class="edit-title">编辑个人信息</div>
+            <div class="avatar-upload">
+                <img src="tx.png" alt="头像预览" class="avatar-preview" id="avatar-preview">
+                <div class="avatar-upload-text">点击更换头像</div>
+                <input type="file" id="avatar-upload-input" accept="image/*" style="display: none;">
+            </div>
+            <div class="edit-field">
+                <label for="username-input">名称:</label>
+                <input type="text" id="username-input" placeholder="输入用户名">
+            </div>
+            <div class="edit-field">
+                <label for="signature-input">个性签名:</label>
+                <input type="text" id="signature-input" placeholder="输入个性签名">
+            </div>
+            <div class="edit-field">
+                <label for="moment-input">此刻:</label>
+                <input type="text" id="moment-input" placeholder="输入此刻数量">
+            </div>
+            <div class="edit-field">
+                <label for="follow-input">关注:</label>
+                <input type="text" id="follow-input" placeholder="输入关注数量">
+            </div>
+            <div class="edit-field">
+                <label for="fans-input">粉丝:</label>
+                <input type="text" id="fans-input" placeholder="输入粉丝数量">
+            </div>
+            <div class="edit-buttons">
+                <button class="cancel-btn" id="cancel-user-edit">取消</button>
+                <button class="save-btn" id="save-user-edit">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <div class="bottom-navigation" id="bottom-nav">
+        <a href="javascript:void(0)" class="nav-link" onclick="handleNavClick('discover')">
+            <img src="di/1.png" alt="发现" class="nav-icon">
+            <span class="nav-label">发现</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-link" onclick="handleNavClick('service')">
+            <img src="di/2.png" alt="服务" class="nav-icon">
+            <span class="nav-label">服务</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-link" id="vehicle-link">
+            <img src="di/3.png" alt="车辆" class="nav-icon" id="vehicle-icon">
+            <span class="nav-label">车辆</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-link" onclick="handleNavClick('shop')">
+            <img src="di/4.png" alt="商店" class="nav-icon">
+            <span class="nav-label">商店</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-link" id="mine-link" onclick="showMainPage()">
+            <img src="di/5.png" alt="我的" class="nav-icon" id="mine-icon">
+            <span class="nav-label">我的</span>
+        </a>
+    </div>
+    </div> <!-- 闭合main-content -->
+    
+    <script>
+        // 允许页面缩放和滑动
+        document.addEventListener('touchmove', function(e) {
+            // 允许正常滚动
+        }, { passive: true });
+        
+        let isVehicleActive = false;
+        let currentSlide = 0;
+        let isDragging = false;
+        let startX = 0;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+        let animationId = 0;
+        
+        // 加载保存的数据或使用默认值
+        let batteryLevel = localStorage.getItem('batteryLevel') || '30';
+        let mileage = localStorage.getItem('mileage') || '98';
+        let username = localStorage.getItem('username') || '阿泽';
+        let signature = localStorage.getItem('signature') || '你的个性签名';
+        let momentCount = localStorage.getItem('momentCount') || '0';
+        let followCount = localStorage.getItem('followCount') || '0';
+        let fansCount = localStorage.getItem('fansCount') || '0';
+        let avatarUrl = localStorage.getItem('avatarUrl') || 'tx.png';
+        
+        // 初始化显示
+        function initDisplay() {
+            document.getElementById('username-text').textContent = username;
+            document.getElementById('user-signature').textContent = signature;
+            document.getElementById('moment-count').textContent = momentCount;
+            document.getElementById('follow-count').textContent = followCount;
+            document.getElementById('fans-count').textContent = fansCount;
+            document.getElementById('user-avatar').src = avatarUrl;
+            document.getElementById('avatar-preview').src = avatarUrl;
+            
+            // 更新车辆信息
+            document.getElementById('fuel-value').textContent = `${batteryLevel}%`;
+            document.getElementById('mileage-value').textContent = `${mileage}公里`;
+            
+            // 初始化进度条
+            updateProgressBar(batteryLevel);
+        }
+        
+        // 更新进度条函数
+        function updateProgressBar(batteryLevel) {
+            const progressBar = document.querySelector('.progress-bar');
+            // 确保油量值在0-100范围内
+            const level = Math.min(100, Math.max(0, parseInt(batteryLevel) || 0));
+            progressBar.style.width = `${level}%`;
+        }
+        
+        // 切换车辆页面
+        function toggleVehiclePage() {
+            try {
+                const vehicleIcon = document.getElementById('vehicle-icon');
+                const mineIcon = document.getElementById('mine-icon');
+                const bottomNav = document.getElementById('bottom-nav');
+                const vehiclePage = document.getElementById('vehicle-page');
+                
+                if (!isVehicleActive) {
+                    vehicleIcon.src = 'di/3.1.png';
+                    mineIcon.src = 'di/5.1.png';
+                    bottomNav.classList.add('vehicle-active');
+                    vehiclePage.style.display = 'block';
+                    isVehicleActive = true;
+                    
+                    // 初始化轮播图
+                    initCarousel();
+                } else {
+                    vehicleIcon.src = 'di/3.png';
+                    mineIcon.src = 'di/5.png';
+                    bottomNav.classList.remove('vehicle-active');
+                    vehiclePage.style.display = 'none';
+                    isVehicleActive = false;
+                }
+            } catch (error) {
+                console.error('切换车辆页面失败:', error);
+            }
+        }
+        
+        // 初始化轮播图
+        function initCarousel() {
+            try {
+                const carousel = document.querySelector('.carousel');
+                const slides = document.querySelectorAll('.carousel-item');
+                const dots = document.querySelectorAll('.carousel-dots .dot');
+                const slideWidth = 540; // 固定滑动宽度，包含间距
+                
+                // 重置轮播状态
+                currentSlide = 0;
+                currentTranslate = 0; // 初始偏移量为0，第一张图居中
+                prevTranslate = currentTranslate;
+                isDragging = false;
+                
+                // 重置轮播位置
+                carousel.style.transform = `translateX(${currentTranslate}px)`;
+                
+                // 触摸事件处理
+                carousel.addEventListener('touchstart', startDrag);
+                carousel.addEventListener('touchmove', drag);
+                carousel.addEventListener('touchend', endDrag);
+                
+                // 鼠标事件处理（用于调试）
+                carousel.addEventListener('mousedown', startDrag);
+                carousel.addEventListener('mousemove', drag);
+                carousel.addEventListener('mouseup', endDrag);
+                carousel.addEventListener('mouseleave', endDrag);
+                
+                // 点击指示器切换
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        currentSlide = index;
+                        updateSlide();
+                    });
+                });
+                
+                function startDrag(event) {
+                    isDragging = true;
+                    startX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX;
+                    cancelAnimationFrame(animationId);
+                    carousel.style.transition = 'none';
+                }
+                
+                function drag(event) {
+                    if (!isDragging) return;
+                    const currentX = event.type === 'touchmove' ? event.touches[0].clientX : event.clientX;
+                    const diff = currentX - startX;
+                    currentTranslate = prevTranslate + diff;
+                    carousel.style.transform = `translateX(${currentTranslate}px)`;
+                }
+                
+                function endDrag() {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    const diff = currentTranslate - prevTranslate;
+                    const threshold = slideWidth / 8; // 减小阈值，让滑动更灵敏
+                    
+                    if (Math.abs(diff) > threshold) {
+                        if (diff > 0 && currentSlide > 0) {
+                            currentSlide--;
+                        } else if (diff < 0 && currentSlide < slides.length - 1) {
+                            currentSlide++;
+                        }
+                    }
+                    
+                    updateSlide();
+                }
+                
+                function updateSlide() {
+                    carousel.style.transition = 'transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                    // 计算每张图片的居中偏移量
+                    currentTranslate = -(currentSlide * slideWidth);
+                    carousel.style.transform = `translateX(${currentTranslate}px)`;
+                    prevTranslate = currentTranslate;
+                    
+                    // 更新指示器
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    dots[currentSlide].classList.add('active');
+                }
+            } catch (error) {
+                console.error('初始化轮播图失败:', error);
+            }
+        }
+        
+        // 显示主页面
+        function showMainPage() {
+            const vehicleIcon = document.getElementById('vehicle-icon');
+            const mineIcon = document.getElementById('mine-icon');
+            const bottomNav = document.getElementById('bottom-nav');
+            const vehiclePage = document.getElementById('vehicle-page');
+            
+            vehicleIcon.src = 'di/3.png';
+            mineIcon.src = 'di/5.png';
+            bottomNav.classList.remove('vehicle-active');
+            vehiclePage.style.display = 'none';
+            isVehicleActive = false;
+        }
+        
+        // 为车辆链接添加点击事件监听器
+        document.getElementById('vehicle-link').addEventListener('click', function() {
+            console.log('车辆图标被点击');
+            toggleVehiclePage();
+        });
+        
+        function handleNavClick(type) {
+            if (type === 'mine') {
+                showMainPage();
+            }
+        }
+        
+        // 显示/隐藏弹窗的通用函数
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+        
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        
+        // 油量/公里编辑功能
+        document.getElementById('edit-icon').addEventListener('click', function() {
+            document.getElementById('battery-input').value = batteryLevel;
+            document.getElementById('mileage-input').value = mileage;
+            showModal('edit-modal');
+        });
+        
+        document.getElementById('cancel-edit').addEventListener('click', function() {
+            hideModal('edit-modal');
+        });
+        
+        document.getElementById('save-edit').addEventListener('click', function() {
+            const newBattery = document.getElementById('battery-input').value;
+            const newMileage = document.getElementById('mileage-input').value;
+            
+            if (newBattery && newMileage) {
+                batteryLevel = newBattery;
+                mileage = newMileage;
+                
+                localStorage.setItem('batteryLevel', batteryLevel);
+                localStorage.setItem('mileage', mileage);
+                
+                // 更新车辆页面显示
+                document.getElementById('fuel-value').textContent = `${batteryLevel}%`;
+                document.getElementById('mileage-value').textContent = `${mileage}公里`;
+                
+                // 更新进度条
+                updateProgressBar(batteryLevel);
+                
+                hideModal('edit-modal');
+            }
+        });
+        
+        // 用户信息编辑功能
+        document.getElementById('user-edit-icon').addEventListener('click', function() {
+            document.getElementById('username-input').value = username;
+            document.getElementById('signature-input').value = signature;
+            document.getElementById('moment-input').value = momentCount;
+            document.getElementById('follow-input').value = followCount;
+            document.getElementById('fans-input').value = fansCount;
+            showModal('user-edit-modal');
+        });
+        
+        document.getElementById('cancel-user-edit').addEventListener('click', function() {
+            hideModal('user-edit-modal');
+        });
+        
+        document.getElementById('save-user-edit').addEventListener('click', function() {
+            const newUsername = document.getElementById('username-input').value;
+            const newSignature = document.getElementById('signature-input').value;
+            const newMoment = document.getElementById('moment-input').value;
+            const newFollow = document.getElementById('follow-input').value;
+            const newFans = document.getElementById('fans-input').value;
+            
+            if (newUsername && newSignature && newMoment && newFollow && newFans) {
+                username = newUsername;
+                signature = newSignature;
+                momentCount = newMoment;
+                followCount = newFollow;
+                fansCount = newFans;
+                
+                localStorage.setItem('username', username);
+                localStorage.setItem('signature', signature);
+                localStorage.setItem('momentCount', momentCount);
+                localStorage.setItem('followCount', followCount);
+                localStorage.setItem('fansCount', fansCount);
+                
+                document.getElementById('username-text').textContent = username;
+                document.getElementById('user-signature').textContent = signature;
+                document.getElementById('moment-count').textContent = momentCount;
+                document.getElementById('follow-count').textContent = followCount;
+                document.getElementById('fans-count').textContent = fansCount;
+                
+                hideModal('user-edit-modal');
+            }
+        });
+        
+        // 头像上传功能
+        document.getElementById('avatar-preview').addEventListener('click', function() {
+            document.getElementById('avatar-upload-input').click();
+        });
+        
+        document.getElementById('avatar-upload-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const newAvatarUrl = event.target.result;
+                    document.getElementById('avatar-preview').src = newAvatarUrl;
+                    document.getElementById('user-avatar').src = newAvatarUrl;
+                    localStorage.setItem('avatarUrl', newAvatarUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 图片预加载函数
+        function preloadImages() {
+            return new Promise((resolve) => {
+                // 用于跟踪已预加载的图片URL，避免重复加载
+                const preloadedUrls = new Set();
+                
+                const images = document.querySelectorAll('img');
+                const backgroundImages = document.querySelectorAll('[style*="background-image"]');
+                const allImages = [];
+                
+                // 处理现有图片，避免重复
+                images.forEach(img => {
+                    if (img.src && !preloadedUrls.has(img.src)) {
+                        preloadedUrls.add(img.src);
+                        allImages.push(img);
+                    }
+                });
+                
+                // 提取CSS背景图片URL，避免重复加载
+                backgroundImages.forEach(element => {
+                    const style = element.style.backgroundImage;
+                    const urlMatch = style.match(/url\(['"]?([^'"]+)['"]?\)/);
+                    if (urlMatch && urlMatch[1] && !preloadedUrls.has(urlMatch[1])) {
+                        preloadedUrls.add(urlMatch[1]);
+                        const img = new Image();
+                        img.src = urlMatch[1];
+                        allImages.push(img);
+                    }
+                });
+                
+                if (allImages.length === 0) {
+                    resolve();
+                    return;
+                }
+                
+                let loadedCount = 0;
+                const totalImages = allImages.length;
+                
+                const onImageLoaded = () => {
+                    loadedCount++;
+                    if (loadedCount === totalImages) {
+                        resolve();
+                    }
+                };
+                
+                allImages.forEach(img => {
+                    if (img.complete) {
+                        onImageLoaded();
+                    } else {
+                        img.addEventListener('load', onImageLoaded);
+                        img.addEventListener('error', onImageLoaded);
+                    }
+                });
+            });
+        }
+        
+        // 图片加载完成检测
+        function checkImagesLoaded() {
+            // 添加图片加载过渡效果
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.5s ease-in-out';
+                
+                if (img.complete) {
+                    img.style.opacity = '1';
+                } else {
+                    img.addEventListener('load', () => {
+                        img.style.opacity = '1';
+                    });
+                    img.addEventListener('error', () => {
+                        img.style.opacity = '1'; // 加载失败也显示占位
+                    });
+                }
+            });
+            
+            // 使用预加载优化
+            preloadImages().then(() => {
+                // 所有图片预加载完成后隐藏加载模态框和初始化界面
+                const loadingModal = document.getElementById('loading-modal');
+                if (loadingModal) {
+                    loadingModal.style.display = 'none';
+                }
+                
+                // 显示主内容
+                document.body.classList.add('loaded');
+            });
+        }
+
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const formattedTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+            document.getElementById('current-time').textContent = `同步于: ${formattedTime}`;
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 初始化显示数据
+            initDisplay();
+            
+            // 检查图片加载情况
+            checkImagesLoaded();
+            
+            // 初始化时间并设置定时器实时更新
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000); // 每秒更新一次
+        });
+    </script>
+
+
+
+<script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;143939ae510c4bbea6975320e4cb1f8b&quot;,&quot;r&quot;:1,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+</body></html>
+    
