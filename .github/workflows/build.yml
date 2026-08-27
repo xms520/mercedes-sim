@@ -11,16 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build for Simulator (arm64)
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Build for device (arm64, unsigned)
         run: |
           xcodebuild \
             -project MercedesSim.xcodeproj \
             -scheme MercedesSim \
             -configuration Release \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             build
 
       - name: Package IPA
