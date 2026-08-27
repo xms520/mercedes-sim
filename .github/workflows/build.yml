@@ -1,2 +1,54 @@
-[CONTEXT OFFLOADED] Content (~928 tokens, 2749 bytes) saved to: /var/minis/offloads/tools/file_write_4d8a24f27bde.txt
-Use file_read tool to retrieve if needed.
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          xcodebuild -version
+          xcodebuild -showsdks | grep iphoneos
+
+      - name: Build for device (arm64, no signing)
+        run: |
+          set -x
+          xcodebuild \
+            -project MercedesSim.xcodeproj \
+            -scheme MercedesSim \
+            -destination 'generic/platform=iOS' \
+            -sdk iphoneos \
+            -arch arm64 \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CONFIGURATION_BUILD_DIR=$RUNNER_TEMP/build \
+            clean build
+          echo "Build succeeded"
+
+      - name: Package IPA
+        run: |
+          set -x
+          APP_DIR="$RUNNER_TEMP/build/MercedesSim.app"
+          mkdir -p "$RUNNER_TEMP/ipa"
+          # 确保 _CodeSignature 目录为空但不包含 CodeResources（避免冲突）
+          mkdir -p "$APP_DIR/_CodeSignature"
+          # 打包
+          cd "$RUNNER_TEMP/build"
+          zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" Payload
+          cp "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.ipa
+          ls -la MercedesSim.ipa
+          echo "IPA size: $(du -h MercedesSim.ipa | cut -f1)"
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: MercedesSim
+          path: MercedesSim.ipa
