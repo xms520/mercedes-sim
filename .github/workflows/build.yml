@@ -16,12 +16,10 @@ jobs:
         run: |
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
-          xcodebuild -showsdks | grep iphoneos
 
-      - name: Build Release for device
+      - name: Build Release
         run: |
           set -x
-          BUILD_DIR="$RUNNER_TEMP/build"
           xcodebuild \
             -project MercedesSim.xcodeproj \
             -scheme MercedesSim \
@@ -30,30 +28,58 @@ jobs:
             -sdk iphoneos \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CONFIGURATION_BUILD_DIR="$BUILD_DIR" \
+            CODE_SIGN_IDENTITY="" \
+            ENTITLEMENTS_REQUIRED=NO \
+            ASSETCATALOG_COMPILER_APPICON_NAME="AppIcon" \
+            DEBUG_INFORMATION_FORMAT=dwarf \
+            CONFIGURATION_BUILD_DIR="$RUNNER_TEMP/build" \
             clean build
           echo "Build succeeded"
-          ls -la "$BUILD_DIR/MercedesSim.app/"
 
-      - name: Clean debug artifacts
+      - name: Clean all signatures and debug artifacts
         run: |
           set -x
           APP="$RUNNER_TEMP/build/MercedesSim.app"
-          echo "Cleaning debug artifacts from: $APP"
-          ls -la "$APP/" | grep -i "dylib\|debug" || echo "No debug files found"
+          
+          # 删除所有可能的签名相关文件
+          rm -rf "$APP/_CodeSignature"
+          rm -f "$APP/embedded.mobileprovision"
+          rm -f "$APP/PkgInfo"
+          
+          # 删除调试 dylib
           rm -f "$APP/__preview.dylib"
           rm -f "$APP/MercedesSim.debug.dylib"
-          rm -rf "$APP/_CodeSignature"
-          echo "Cleaned. Remaining files:"
+          rm -f "$APP/*.debug.dylib"
+          rm -f "$APP/*.dylib"
+          
+          # 删除调试入口文件
+          rm -f "$APP/__debug_dylib"
+          rm -f "$APP/__debug_instlnm"
+          rm -f "$APP/__debug_entry"
+          rm -f "$APP/__debug_main_executable_dylib_entry_point"
+          
+          # 删除 .dSYM 调试符号
+          rm -rf "$APP.dSYM"
+          
+          echo "Cleaned app directory:"
           ls -la "$APP/"
+          
+          # 检查二进制中是否还有签名相关字符串
+          echo "Checking binary for signature traces:"
+          strings "$APP/MercedesSim" | grep -i "signature\|CodeDir\|CdStr\|Hash" || echo "No signature traces found"
 
       - name: Package IPA
         run: |
           set -x
           APP_DIR="$RUNNER_TEMP/build/MercedesSim.app"
           mkdir -p "$RUNNER_TEMP/ipa"
+          
+          # 确保目录存在且干净
           cd "$APP_DIR/.."
+          
+          # 打包（不包含任何签名目录）
           zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.app
+          
           echo "IPA created: $(du -h "$RUNNER_TEMP/ipa/MercedesSim.ipa" | cut -f1)"
           echo "IPA_PATH=$RUNNER_TEMP/ipa/MercedesSim.ipa" >> $GITHUB_ENV
 
