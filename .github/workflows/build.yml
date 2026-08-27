@@ -14,7 +14,17 @@ jobs:
 
       - name: Set up Xcode
         run: |
-          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          # 检测可用的 Xcode 版本
+          xcode_paths=(/Applications/Xcode*.app)
+          for p in "${xcode_paths[@]}"; do
+            echo "Found: $p"
+          done
+          # 使用最新的 Xcode
+          LATEST=$(ls -t /Applications/Xcode*.app 2>/dev/null | head -1)
+          if [ -n "$LATEST" ]; then
+            sudo xcode-select -s "$LATEST/Contents/Developer"
+            echo "Using: $LATEST"
+          fi
           xcodebuild -version
           xcodebuild -showsdks | grep iphoneos
 
@@ -38,17 +48,15 @@ jobs:
           set -x
           APP_DIR="$RUNNER_TEMP/build/MercedesSim.app"
           mkdir -p "$RUNNER_TEMP/ipa"
-          # 确保 _CodeSignature 目录为空但不包含 CodeResources（避免冲突）
+          # 创建空的 _CodeSignature 目录（不写 CodeResources，避免冲突）
           mkdir -p "$APP_DIR/_CodeSignature"
-          # 打包
-          cd "$RUNNER_TEMP/build"
-          zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" Payload
-          cp "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.ipa
-          ls -la MercedesSim.ipa
-          echo "IPA size: $(du -h MercedesSim.ipa | cut -f1)"
+          # 打包 IPA
+          cd "$APP_DIR/.."
+          zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.app
+          echo "IPA created: $(du -h "$RUNNER_TEMP/ipa/MercedesSim.ipa" | cut -f1)"
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: MercedesSim
-          path: MercedesSim.ipa
+          path: "$RUNNER_TEMP/ipa/MercedesSim.ipa"
