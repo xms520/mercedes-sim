@@ -29,10 +29,9 @@ jobs:
 
       - name: Package IPA
         run: |
-          set -e
-          APP=build/Release-iphoneos/MercedesSim.app
-          if [ ! -d "$APP" ]; then
-            APP=$(find build -name "MercedesSim.app" -type d | head -1)
+          APP=$(find build -name "MercedesSim.app" -type d 2>/dev/null | head -1)
+          if [ -z "$APP" ]; then
+            APP=$(find . -name "MercedesSim.app" -type d | grep -v ".xcodeproj" | head -1)
           fi
           echo "App bundle: $APP"
           mkdir -p ipa/Payload
