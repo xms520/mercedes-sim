@@ -14,11 +14,8 @@ jobs:
 
       - name: Set up Xcode
         run: |
-          xcode_paths=($(ls -t /Applications/Xcode*.app 2>/dev/null))
-          if [ ${#xcode_paths[@]} -gt 0 ]; then
-            sudo xcode-select -s "${xcode_paths[0]}/Contents/Developer"
-            echo "Using: ${xcode_paths[0]}"
-          fi
+          # 直接使用默认 Xcode
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
           xcodebuild -showsdks | grep iphoneos
 
