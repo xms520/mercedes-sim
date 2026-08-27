@@ -11,11 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Xcode version
-        run: xcodebuild -version
-
-      # 第一步：生成有效的占位签名（使 IPA 结构完整）
-      - name: Build & Ad-hoc Sign (placeholder)
+      # 第一步：无签名构建（成功过）
+      - name: Build (unsigned)
         run: |
           xcodebuild \
             -project MercedesSim.xcodeproj \
@@ -23,13 +20,54 @@ jobs:
             -configuration Release \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
-            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=YES \
-            PROVISIONING_PROFILE_SPECIFIER="" \
             build
 
-      # 第二步：从 DerivedData 打包 IPA
+      # 第二步：创建占位 CodeSignature（让 IPA 结构完整）
+      - name: Create placeholder CodeSignature
+        run: |
+          APP=$(find ~/Library/Developer/Xcode/DerivedData \
+            -name "MercedesSim.app" -type d 2>/dev/null | head -1)
+          echo "App: $APP"
+          mkdir -p "$APP/_CodeSignature"
+          # 创建最小有效 CodeResources
+          python3 << 'EOF'
+          import plistlib, os, hashlib
+          app = os.environ.get('APP_PATH', '')
+          if not app:
+              import subprocess
+              result = subprocess.run(['find', '/Users/runner/Library/Developer/Xcode/DerivedData', 
+                                       '-name', 'MercedesSim.app', '-type', 'd'], 
+                                     capture_output=True, text=True)
+              app = result.stdout.strip().split('\n')[0]
+          
+          cr_path = os.path.join(app, '_CodeSignature', 'CodeResources')
+          data = {
+              'files': {},
+              'files2': {},
+              'rules': {},
+              'rulestree': {}
+          }
+          with open(cr_path, 'wb') as f:
+              plistlib.dump(data, f)
+          print(f"Created CodeResources at {cr_path}")
+          EOF
+          export APP_PATH="$APP"
+          python3 << 'EOF'
+          import plistlib, os, subprocess
+          result = subprocess.run(['find', '/Users/runner/Library/Developer/Xcode/DerivedData', 
+                                   '-name', 'MercedesSim.app', '-type', 'd'], 
+                                 capture_output=True, text=True)
+          app = result.stdout.strip().split('\n')[0]
+          cr_path = os.path.join(app, '_CodeSignature', 'CodeResources')
+          data = {'files': {}, 'files2': {}, 'rules': {}, 'rulestree': {}}
+          with open(cr_path, 'wb') as f:
+              plistlib.dump(data, f)
+          print(f"Created: {cr_path}")
+          EOF
+
+      # 第三步：打包 IPA
       - name: Package IPA
         run: |
           APP=$(find ~/Library/Developer/Xcode/DerivedData \
@@ -41,9 +79,7 @@ jobs:
           zip -qr ../MercedesSim.ipa Payload
           cd ..
           ls -lh MercedesSim.ipa
-          # 验证 CodeSignature 存在
-          unzip -l Payload/MercedesSim.app/_CodeSignature >/dev/null 2>&1 \
-            && echo "CodeSignature: OK" || echo "CodeSignature: MISSING"
+          echo "CodeSignature present: $([ -d 'Payload/MercedesSim.app/_CodeSignature' ] && echo YES || echo NO)"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
