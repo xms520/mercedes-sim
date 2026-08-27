@@ -14,16 +14,10 @@ jobs:
 
       - name: Set up Xcode
         run: |
-          # 检测可用的 Xcode 版本
-          xcode_paths=(/Applications/Xcode*.app)
-          for p in "${xcode_paths[@]}"; do
-            echo "Found: $p"
-          done
-          # 使用最新的 Xcode
-          LATEST=$(ls -t /Applications/Xcode*.app 2>/dev/null | head -1)
-          if [ -n "$LATEST" ]; then
-            sudo xcode-select -s "$LATEST/Contents/Developer"
-            echo "Using: $LATEST"
+          xcode_paths=($(ls -t /Applications/Xcode*.app 2>/dev/null))
+          if [ ${#xcode_paths[@]} -gt 0 ]; then
+            sudo xcode-select -s "${xcode_paths[0]}/Contents/Developer"
+            echo "Using: ${xcode_paths[0]}"
           fi
           xcodebuild -version
           xcodebuild -showsdks | grep iphoneos
@@ -48,9 +42,7 @@ jobs:
           set -x
           APP_DIR="$RUNNER_TEMP/build/MercedesSim.app"
           mkdir -p "$RUNNER_TEMP/ipa"
-          # 创建空的 _CodeSignature 目录（不写 CodeResources，避免冲突）
           mkdir -p "$APP_DIR/_CodeSignature"
-          # 打包 IPA
           cd "$APP_DIR/.."
           zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.app
           echo "IPA created: $(du -h "$RUNNER_TEMP/ipa/MercedesSim.ipa" | cut -f1)"
