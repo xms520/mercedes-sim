@@ -37,14 +37,15 @@ jobs:
           set -x
           APP_DIR="$RUNNER_TEMP/build/MercedesSim.app"
           mkdir -p "$RUNNER_TEMP/ipa"
-          # 创建空 _CodeSignature 目录（避免全能签误判）
           mkdir -p "$APP_DIR/_CodeSignature"
           cd "$APP_DIR/.."
           zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.app
           echo "IPA created: $(du -h "$RUNNER_TEMP/ipa/MercedesSim.ipa" | cut -f1)"
+          # 输出路径供后续步骤使用
+          echo "IPA_PATH=$RUNNER_TEMP/ipa/MercedesSim.ipa" >> $GITHUB_ENV
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: MercedesSim
-          path: "$RUNNER_TEMP/ipa/MercedesSim.ipa"
+          path: ${{ env.IPA_PATH }}
