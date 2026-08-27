@@ -11,28 +11,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Xcode version
-        run: xcodebuild -version
-
-      - name: Build for device (arm64, unsigned)
+      - name: Build for Simulator (arm64)
         run: |
           xcodebuild \
             -project MercedesSim.xcodeproj \
             -scheme MercedesSim \
             -configuration Release \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGN_IDENTITY='' \
-            CODE_SIGNING_REQUIRED=NO \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
             build
 
       - name: Package IPA
         run: |
-          APP=$(find build -name "MercedesSim.app" -type d 2>/dev/null | head -1)
-          if [ -z "$APP" ]; then
-            APP=$(find . -name "MercedesSim.app" -type d | grep -v ".xcodeproj" | head -1)
-          fi
+          APP=$(find build -name "MercedesSim.app" -type d | head -1)
           echo "App bundle: $APP"
           mkdir -p ipa/Payload
           cp -R "$APP" ipa/Payload/
