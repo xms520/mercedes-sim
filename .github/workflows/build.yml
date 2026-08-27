@@ -21,6 +21,7 @@ jobs:
       - name: Build Release for device
         run: |
           set -x
+          BUILD_DIR="$RUNNER_TEMP/build"
           xcodebuild \
             -project MercedesSim.xcodeproj \
             -scheme MercedesSim \
@@ -29,21 +30,22 @@ jobs:
             -sdk iphoneos \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CONFIGURATION_BUILD_DIR=$RUNNER_TEMP/build \
+            CONFIGURATION_BUILD_DIR="$BUILD_DIR" \
             clean build
           echo "Build succeeded"
-          ls -la "$RUNNER_TEMP/build/MercedesSim.app/"
+          ls -la "$BUILD_DIR/MercedesSim.app/"
 
       - name: Clean debug artifacts
         run: |
+          set -x
           APP="$RUNNER_TEMP/build/MercedesSim.app"
-          # 删除调试 dylib
+          echo "Cleaning debug artifacts from: $APP"
+          ls -la "$APP/" | grep -i "dylib\|debug" || echo "No debug files found"
           rm -f "$APP/__preview.dylib"
           rm -f "$APP/MercedesSim.debug.dylib"
-          # 删除调试符号入口
-          # 清理 _CodeSignature 目录（全能签会重新生成）
           rm -rf "$APP/_CodeSignature"
-          echo "Cleaned debug artifacts"
+          echo "Cleaned. Remaining files:"
+          ls -la "$APP/"
 
       - name: Package IPA
         run: |
