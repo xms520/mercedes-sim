@@ -1,2 +1,62 @@
-[CONTEXT OFFLOADED] Content (~1087 tokens, 3576 bytes) saved to: /var/minis/offloads/tools/file_write_429a9f798c87.txt
-Use file_read tool to retrieve if needed.
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          xcodebuild -version
+          xcodebuild -showsdks | grep iphoneos
+
+      - name: Build Release for device
+        run: |
+          set -x
+          xcodebuild \
+            -project MercedesSim.xcodeproj \
+            -scheme MercedesSim \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CONFIGURATION_BUILD_DIR=$RUNNER_TEMP/build \
+            clean build
+          echo "Build succeeded"
+          ls -la "$RUNNER_TEMP/build/MercedesSim.app/"
+
+      - name: Clean debug artifacts
+        run: |
+          APP="$RUNNER_TEMP/build/MercedesSim.app"
+          # 删除调试 dylib
+          rm -f "$APP/__preview.dylib"
+          rm -f "$APP/MercedesSim.debug.dylib"
+          # 删除调试符号入口
+          # 清理 _CodeSignature 目录（全能签会重新生成）
+          rm -rf "$APP/_CodeSignature"
+          echo "Cleaned debug artifacts"
+
+      - name: Package IPA
+        run: |
+          set -x
+          APP_DIR="$RUNNER_TEMP/build/MercedesSim.app"
+          mkdir -p "$RUNNER_TEMP/ipa"
+          cd "$APP_DIR/.."
+          zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.app
+          echo "IPA created: $(du -h "$RUNNER_TEMP/ipa/MercedesSim.ipa" | cut -f1)"
+          echo "IPA_PATH=$RUNNER_TEMP/ipa/MercedesSim.ipa" >> $GITHUB_ENV
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: MercedesSim
+          path: ${{ env.IPA_PATH }}
