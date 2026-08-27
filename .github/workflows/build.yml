@@ -14,12 +14,11 @@ jobs:
 
       - name: Set up Xcode
         run: |
-          # 直接使用默认 Xcode
           sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
           xcodebuild -version
           xcodebuild -showsdks | grep iphoneos
 
-      - name: Build for device (arm64, no signing)
+      - name: Build for device (arm64)
         run: |
           set -x
           xcodebuild \
@@ -27,7 +26,6 @@ jobs:
             -scheme MercedesSim \
             -destination 'generic/platform=iOS' \
             -sdk iphoneos \
-            -arch arm64 \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CONFIGURATION_BUILD_DIR=$RUNNER_TEMP/build \
@@ -39,6 +37,7 @@ jobs:
           set -x
           APP_DIR="$RUNNER_TEMP/build/MercedesSim.app"
           mkdir -p "$RUNNER_TEMP/ipa"
+          # 创建空 _CodeSignature 目录（避免全能签误判）
           mkdir -p "$APP_DIR/_CodeSignature"
           cd "$APP_DIR/.."
           zip -r -X "$RUNNER_TEMP/ipa/MercedesSim.ipa" MercedesSim.app
